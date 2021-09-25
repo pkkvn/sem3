@@ -40,17 +40,17 @@ public :
 
 class SegmentModState : public State {
 private:
-    SegmentState const segm_state;
+    int const beg, end;
 
     std::set<int> const incl;
     std::set<int> const excl;
 
 
 public:
-    //SegmentModState() : beg(0), end(-1){}
-    SegmentModState(int a, int b, std::set<int> const &inc, std::set<int> const &exc ): segm_state(a, b), incl(inc), excl(exc)  { }
+    SegmentModState() : beg(0), end(-1){}
+    SegmentModState(int beg, int end, std::set<int> const &inc, std::set<int> const &exc ): beg(beg), end(end), incl(inc), excl(exc)  { }
     virtual bool contains(int s) const {
-        return ((segm_state.contains(s)) || (incl.count(s) > 0)) && (excl.count(s) == 0);
+        return ((s >= beg && s <= end) || (incl.count(s) > 0)) && (excl.count(s) == 0);
     }
 };
 class SetState : public State {
@@ -87,38 +87,81 @@ public :
 };
 
 int main (int argc, const char * argv []) {
-    DiscreteState d(1) ;
-    SegmentState s(0, 10) ;
-    SetState ss ({1, 3, 5, 7, 23, 48, 57, 60, 90, 99});
+    //DiscreteState d(1) ;
+    //SegmentState s(0, 10) ;
+    //SetState ss ({1, 3, 5, 7, 23, 48, 57, 60, 90, 99});
 
-    std::ofstream out;
-    out.open("Discrete2.txt");
-    for (int i = 1; i < 101; i++){
-        ProbabilityTest pt(9, 0, i, 10000);
-
-        out << i << " " << pt(d) << std::endl;
+    /*std::ofstream out;
+    out.open("Data1.txt");
+    for (auto test_count = 10; test_count <= 1e8; test_count *= 10) {
+         out << test_count << " ";
+     }
+    out << "\n";
+    DiscreteState d(1);
+    for (auto test_count = 10; test_count < 1e8; test_count *= 10){
+        ProbabilityTest pt(10, 0, 100, test_count);
+        float tmp = 0;
+        int n1 = 10;
+        for (auto i = 0; i < n1; i++) {
+             tmp += pt(d);
+         }
+         out << tmp/n1 << " ";
+         std::cout << "2\n";
+     }
+     out << "\n";
+     std::cout << "1\n";
     }
+
+
     out.close();
 
     std::cout << "1 test completeted" << std::endl;
 
-    out.open("Segment2.txt");
-    for (int i = 1; i < 101; i++){
-        ProbabilityTest pt(9, 0, i, 10000);
+    //out.open("Segment1.txt");
+    for (auto test_count = 10; test_count < 1e8; test_count *= 10){
+        ProbabilityTest pt(10, 0, 100, test_count);
 
+    }
+
+    out.close();
+    std::cout << "2 test completeted" << std::endl;
+
+    //out.open("Set1.txt");
+
+    out.close();
+    std::cout << "3 test completeted" << std::endl;*/
+
+    DiscreteState d(1) ;
+    SegmentState s(0 ,10) ;
+    SetState ss ({1 , 3 , 5 , 7 , 23 , 48 , 57 , 60 , 90 , 99}) ;
+    /*ProbabilityTest pt(10 ,0 ,100 ,100000);
+    std::cout << pt(d) << std :: endl;
+    std::cout << pt(s) << std :: endl;
+    std::cout << pt(ss) << std :: endl;*/
+
+    std::ofstream out;
+    out.open("Discrete1.txt");
+    for (int i = 10; i <= 1e8; i *= 10){
+        ProbabilityTest pt(10, 0, 100, i);
+        out << i << " " << pt(d) << std::endl;
+    }
+    out.close();
+    std::cout << "1 test completeted" << std::endl;
+    out.open("Segment1.txt");
+    for (int i = 10; i <= 1e8; i *= 10){
+        ProbabilityTest pt(10, 0, 100, i);
         out << i << " " << pt(s) << std::endl;
     }
     out.close();
     std::cout << "2 test completeted" << std::endl;
-
-    out.open("Set2.txt");
-    for (int i = 1; i < 101; i++){
-        ProbabilityTest pt(9, 0, i, 10000);
-
+    out.open("Set1.txt");
+    for (int i = 10; i <= 1e8; i *= 10){
+        ProbabilityTest pt(10, 0, 100, i);
         out << i << " " << pt(ss) << std::endl;
     }
     out.close();
     std::cout << "3 test completeted" << std::endl;
+
 
 
     return 0;
