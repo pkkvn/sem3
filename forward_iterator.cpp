@@ -1,43 +1,69 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
-#include <list>
+#include <array>
 
-using namespace std;
+template <typename T, size_t N>
+class MArrayIterator;
 
-struct iterator_forward {
-   typedef typename Iterator::iterator_category iterator_category;
-   typedef typename Iterator::value_type value_type;
-   typedef typename Iterator::difference_type difference_type;
-   typedef difference_type distance_type;
-   typedef typename Iterator::pointer pointer;
-   typedef typename Iterator::reference reference;
-   };
+template <typename T, size_t N>
+class MArray {
+private:
+    T elements[N];
+public:
+    MArray() = default;
+    MArray(MArray<T,N> const &src) = default;
+    MArray(MArray<T,N> &&src) =  default;
+    MArray<T,N>& operator=(MArray<T,N> const &src) = default;
+    MArray<T,N>& operator=(MArray<T,N> &&src) = default;
 
+    friend MArrayIterator<T,N>;
 
+    MArrayIterator<T,N> begin(){
+        return MArrayIterator<T,N>(*this,0);
+    }
 
-template< class it >
-void
-function( it i1, it i2 )
-{
-   iterator_forward<it>::iterator_category cat;
-   cout << typeid( cat ).name( ) << endl;
-   while ( i1 != i2 )
-   {
-      iterator_forward<it>::value_type x;
-      x = *i1;
-      cout << x << " ";
-      i1++;
-   };
-   cout << endl;
+    MArrayIterator<T,N> end(){
+        return MArrayIterator<T,N>(*this,N);
+    }
 };
 
-int main( )
-{
-   vector<char> vc( 10,'a' );
-   list<int> li( 10 );
-   function( vc.begin( ), vc.end( ) );
-   function( li.begin( ), li.end( ) );
-}
+template <typename T, size_t N>
+class MArrayIterator {
+private:
+    MArray<T,N> &ma;
+    size_t pos;
+public:
+    explicit MArrayIterator(MArray<T,N> &ma): MArrayIterator(ma,0) { }
+    MArrayIterator(MArray<T,N> &ma, size_t pos): ma(ma), pos(pos) { }
+    MArrayIterator(MArrayIterator<T,N> const &src) = default;
+    MArrayIterator& operator = (MArrayIterator<T,N> const &src) = default;
 
+    T& operator*() const{
+        return ma.elements[pos];
+    }
+
+    MArrayIterator<T,N>& operator++() {
+        ++pos;
+        return *this;
+    }
+
+    bool operator!=(MArrayIterator<T,N> const &rha) const{
+        return !(&ma == &rha.ma && pos == rha.pos);
+    }
+};
+
+int main(int argc, const char * argv[]) {
+    MArray<int,3> a;
+    {
+        auto it = a.begin();
+        *it = 1;
+        *++it = 2;
+        *++it = 3;
+    }
+    for (auto it = a.begin(); it != a.end(); ++it)
+        std::cout << *it << ' ';
+    std::cout << std::endl;
+    return 0;
+}
 
